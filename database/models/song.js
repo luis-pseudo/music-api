@@ -15,6 +15,16 @@ module.exports = (sequelize, DataTypes) => {
     title: DataTypes.STRING,
     duration: DataTypes.INTEGER,
     albumId: DataTypes.INTEGER,
+    imageUrl: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      defaultValue: null,
+    },
+    imagePublicId: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      defaultValue: null,
+    },
   }, {
     sequelize,
     modelName: 'Song',

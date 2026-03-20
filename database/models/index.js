@@ -9,10 +9,15 @@ const config = envConfigs[env];
 const db = {};
 
 let sequelize;
-if (config.url) {
-  sequelize = new Sequelize(config.url, config);
-} else {
-  sequelize = new Sequelize(config.database, config.username, config.password, config);
+try {
+  if (config.url) {
+    sequelize = new Sequelize(config.url, config);
+  } else {
+    sequelize = new Sequelize(config.database, config.username, config.password, config);
+  }
+} catch (error) {
+  console.error('Database connection error:', error.message);
+  process.exit(1);
 }
 
 fs
@@ -21,10 +26,14 @@ fs
     return (file.indexOf('.') !== 0) && (file !== basename) && (file.slice(-3) === '.js');
   })
   .forEach(file => {
-    const model = sequelize['import'](path.join(__dirname, file));
-   // const model = require(path.join(__dirname, file))(sequelize, Sequelize.DataTypes)
-    console.log(model);
-    db[model.name] = model;
+    try {
+      const model = require(path.join(__dirname, file))(sequelize, Sequelize.DataTypes);
+      console.log(`✓ Loaded model: ${model.name}`);
+      db[model.name] = model;
+    } catch (error) {
+      console.error(`✗ Error loading model from ${file}:`, error.message);
+      throw error;
+    }
   });
 
 Object.keys(db).forEach(modelName => {
