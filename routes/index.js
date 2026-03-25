@@ -14,8 +14,8 @@ router.delete('/albums/:id', controllers.deleteAlbum);
 
 router.get('/songs', controllers.getAllSongs);
 router.get('/songs/:id', controllers.getSongById);
-router.post('/songs', upload.single('image'), controllers.createSong);
-router.put('/songs/:id', upload.single('image'), controllers.updateSong);
+router.post('/songs', controllers.createSong);
+router.put('/songs/:id', controllers.updateSong);
 router.delete('/songs/:id', controllers.deleteSong);
 
 module.exports = router;

@@ -81,7 +81,6 @@ const createAlbum = async (req, res) => {
     
     const albumData = { title, artist, year };
     
-    // Handle image upload if file is provided
     if (req.file) {
       const uploadedImage = await uploadImageBuffer(req.file);
       albumData.imageUrl = uploadedImage.secure_url;
@@ -180,7 +179,6 @@ const deleteAlbum = async (req, res) => {
   }
 };
 
-// =============== SONG CONTROLLERS ===============
 
 const getAllSongs = async (req, res) => {
   try {
@@ -259,13 +257,6 @@ const createSong = async (req, res) => {
     
     const songData = { title, duration, albumId };
     
-    // Handle image upload if file is provided
-    if (req.file) {
-      const uploadedImage = await uploadImageBuffer(req.file);
-      songData.imageUrl = uploadedImage.secure_url;
-      songData.imagePublicId = uploadedImage.public_id;
-    }
-    
     const song = await Song.create(songData);
     
     res.status(201).json({
@@ -309,17 +300,6 @@ const updateSong = async (req, res) => {
     
     const updateData = { title, duration, albumId };
     
-    // Handle image update
-    if (req.file) {
-      // Delete old image from Cloudinary if it exists
-      if (song.imagePublicId) {
-        await cloudinary.uploader.destroy(song.imagePublicId);
-      }
-      const uploadedImage = await uploadImageBuffer(req.file);
-      updateData.imageUrl = uploadedImage.secure_url;
-      updateData.imagePublicId = uploadedImage.public_id;
-    }
-    
     await song.update(updateData);
     
     res.status(200).json({
@@ -349,11 +329,6 @@ const deleteSong = async (req, res) => {
       });
     }
     
-    // Delete image from Cloudinary if it exists
-    if (song.imagePublicId) {
-      await cloudinary.uploader.destroy(song.imagePublicId);
-    }
-    
     await song.destroy();
     
     res.status(200).json({
@@ -369,16 +344,13 @@ const deleteSong = async (req, res) => {
   }
 };
 
-// =============== EXPORTS ===============
 
 module.exports = {
-  // Album controllers
   getAllAlbums,
   getAlbumById,
   createAlbum,
   updateAlbum,
   deleteAlbum,
-  // Song controllers
   getAllSongs,
   getSongById,
   createSong,
